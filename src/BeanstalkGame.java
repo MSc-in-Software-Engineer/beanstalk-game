@@ -6,9 +6,9 @@ import javax.swing.JFrame;
 
 
 public class BeanstalkGame extends JFrame implements KeyListener {
-    private char[][] maze;
+    private final char[][] maze;
     private int gridSize = 40; // pixel size of each grid cell
-    private JLabel[][] gridLabels;
+    private final JLabel[][] gridLabels;
 
     private BeanstalkGame() {
         super("Maze Game");
@@ -82,26 +82,26 @@ public class BeanstalkGame extends JFrame implements KeyListener {
         int pushRow = -1;
         int pushCol = -1;
         switch (direction) {
-            case "up":
+            case "up" -> {
                 newRow--;
                 pushRow = newRow - 1;
                 pushCol = newCol;
-                break;
-            case "down":
+            }
+            case "down" -> {
                 newRow++;
                 pushRow = newRow + 1;
                 pushCol = newCol;
-                break;
-            case "left":
+            }
+            case "left" -> {
                 newCol--;
                 pushRow = newRow;
                 pushCol = newCol - 1;
-                break;
-            case "right":
+            }
+            case "right" -> {
                 newCol++;
                 pushRow = newRow;
                 pushCol = newCol + 1;
-                break;
+            }
         }
         // Check if new position is valid and move object if it is
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length
