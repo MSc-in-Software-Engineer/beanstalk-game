@@ -4,10 +4,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 
-
+/*
+* Verilen linkteki oyunu yapmak için
+* uğraştım ... final için daha iyi bir
+* proje ve OOP mantığı ile Final ödevini göndereceğim..
+* */
 public class BeanstalkGame extends JFrame implements KeyListener {
     private final char[][] maze;
-    private int gridSize = 40; // pixel size of each grid cell
+    private int gridSize = 40;
     private final JLabel[][] gridLabels;
 
     private BeanstalkGame() {
@@ -15,10 +19,8 @@ public class BeanstalkGame extends JFrame implements KeyListener {
 
         String level = "xxxxxxxxxxxxxxxxxxxx!xxxxxx####xxxxxxxxxx!xxxxx##--#xxxxxxxxxx!xxxxx#---#xxxxxxxxxx!xxx###--5##xxxxxxxxx!xxx#--3-4-#xxxxxxxxx!xxx#-#-##-#xxx#####x!xxx#-#-##-#####---#x!xxx#--2---------7-#x!xxx###-###-#0##---#x!xxxxx#-----########x!xxxxx#######xxxxxxxx!xxxxxxxxxxxxxxxxxxxx!xxxxxxxxxxxxxxxxxxxx";
 
-        // Split the maze string into rows
         String[] rows = level.split("!");
 
-        // Convert each row into a char array and add it to the grid array
         maze = new char[rows.length][rows[0].length()];
         for (int i = 0; i < rows.length; i++) {
             maze[i] = rows[i].toCharArray();
@@ -60,10 +62,11 @@ public class BeanstalkGame extends JFrame implements KeyListener {
         setSize(maze[0].length * gridSize, maze.length * gridSize);
         setVisible(true);
         addKeyListener(this);
+        setLocationRelativeTo(null);
+        setResizable(false);
     }
 
     private void moveObject(String direction) {
-        // Determine current position of object
         int objectRow = -1;
         int objectCol = -1;
         for (int i = 0; i < maze.length; i++) {
@@ -76,7 +79,6 @@ public class BeanstalkGame extends JFrame implements KeyListener {
             }
         }
 
-        // Determine new position based on direction
         int newRow = objectRow;
         int newCol = objectCol;
         int pushRow = -1;
@@ -103,7 +105,7 @@ public class BeanstalkGame extends JFrame implements KeyListener {
                 pushCol = newCol + 1;
             }
         }
-        // Check if new position is valid and move object if it is
+
         if (newRow >= 0 && newRow < maze.length && newCol >= 0 && newCol < maze[0].length
                 && maze[newRow][newCol] != '#') {
             if (maze[newRow][newCol] == '-') {
@@ -121,7 +123,6 @@ public class BeanstalkGame extends JFrame implements KeyListener {
             }
         }
     }
-
 
     private void updateGrid() {
         for (int i = 0; i < maze.length; i++) {
