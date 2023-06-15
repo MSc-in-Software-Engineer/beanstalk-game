@@ -2,15 +2,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import Character.*;
 
 public class BeanstalkGame extends JFrame implements KeyListener {
     private char[][] maze;
     private final JLabel[][] gridLabels;
-    private String[] levels;
+    private final String[] levels;
     private int currentLevelIndex;
     private final int totalLevels;
+    private int moveCount;
+    private final JLabel moveCountLabel;
+    private final JLabel currentLevelLabel;
+    private final JLabel currentSkillLabel;
+    private CharacterFeature activeFeature;
 
-    private BeanstalkGame() {
+    BeanstalkGame() {
         super("Maze Game");
 
         GameSettingFileRead gameSettingFileRead = GameSettingFileRead.getInstance();
@@ -38,6 +44,10 @@ public class BeanstalkGame extends JFrame implements KeyListener {
             }
         }
 
+        moveCountLabel = new JLabel("Moves: 0");
+        currentLevelLabel = new JLabel("Level: 0");
+        currentSkillLabel = new JLabel("Current Skill: N/A");
+
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> previousLevel());
 
@@ -47,6 +57,10 @@ public class BeanstalkGame extends JFrame implements KeyListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(backButton);
         buttonPanel.add(nextButton);
+        buttonPanel.add(moveCountLabel);
+        buttonPanel.add(currentLevelLabel);
+        buttonPanel.add(currentSkillLabel);
+
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(gridPanel, BorderLayout.CENTER);
@@ -127,6 +141,7 @@ public class BeanstalkGame extends JFrame implements KeyListener {
                 // Move object to new position
                 maze[objectRow][objectCol] = '-';
                 maze[newRow][newCol] = '0';
+                moveCount++;
                 updateGrid();
             } else if (isPushable(maze[newRow][newCol]) && pushRow >= 0 && pushRow < maze.length && pushCol >= 0 && pushCol < maze[0].length
                     && maze[pushRow][pushCol] == '-') {
@@ -134,10 +149,32 @@ public class BeanstalkGame extends JFrame implements KeyListener {
                 maze[pushRow][pushCol] = maze[newRow][newCol];
                 maze[objectRow][objectCol] = '-';
                 maze[newRow][newCol] = '0';
+                moveCount++;
                 updateGrid();
             }
         }
+
+        // Update the move count label
+        moveCountLabel.setText("Moves: " + moveCount);
+
+        if (moveCount % 10 == 0) {
+            activateNewFeature();
+        }
     }
+
+    private void activateNewFeature() {
+        // List of available features
+        CharacterFeature[] features = {new RunningFeature(), new SkateboardFeature(), new StrongPunchFeature(),
+                new StrongPushFeature(), new DrawFeature()};
+
+        // Select a random feature
+        int randomIndex = (int) (Math.random() * features.length);
+        activeFeature = features[randomIndex];
+
+        // Apply the selected feature
+        currentSkillLabel.setText("Current Skill: " + activeFeature.applyFeature());
+    }
+
 
     private boolean isPushable(char object) {
         return object == '2' || object == '3' || object == '4' || object == '5' || object == '@' || object == 'x' || object == '-';
@@ -154,12 +191,16 @@ public class BeanstalkGame extends JFrame implements KeyListener {
     private void nextLevel() {
         currentLevelIndex = (currentLevelIndex + 1) % totalLevels;
         loadLevel(currentLevelIndex);
+
+        currentLevelLabel.setText("level: " + currentLevelIndex);
         requestFocus(); // Set focus back to the frame
     }
 
     private void previousLevel() {
         currentLevelIndex = (currentLevelIndex - 1 + totalLevels) % totalLevels;
         loadLevel(currentLevelIndex);
+
+        currentLevelLabel.setText("level: " + currentLevelIndex);
         requestFocus(); // Set focus back to the frame
     }
 
@@ -173,21 +214,6 @@ public class BeanstalkGame extends JFrame implements KeyListener {
 
         //resetObjectPosition();
         updateGrid();
-    }
-
-    private void resetObjectPosition() {
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze[0].length; j++) {
-                if (maze[i][j] == '0') {
-                    maze[i][j] = '-';
-                    return;
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(BeanstalkGame::new);
     }
 
     @Override
