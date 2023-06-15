@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 * */
 public class BeanstalkGame extends JFrame implements KeyListener {
     private final char[][] maze;
-    private int gridSize = 40;
     private final JLabel[][] gridLabels;
 
     private BeanstalkGame() {
@@ -59,6 +58,7 @@ public class BeanstalkGame extends JFrame implements KeyListener {
 
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        int gridSize = 40;
         setSize(maze[0].length * gridSize, maze.length * gridSize);
         setVisible(true);
         addKeyListener(this);
@@ -113,15 +113,19 @@ public class BeanstalkGame extends JFrame implements KeyListener {
                 maze[objectRow][objectCol] = '-';
                 maze[newRow][newCol] = '0';
                 updateGrid();
-            } else if (maze[newRow][newCol] == '0' && pushRow >= 0 && pushRow < maze.length && pushCol >= 0 && pushCol < maze[0].length
+            } else if (isPushable(maze[newRow][newCol]) && pushRow >= 0 && pushRow < maze.length && pushCol >= 0 && pushCol < maze[0].length
                     && maze[pushRow][pushCol] == '-') {
                 // Move object and pushed object to new positions
-                maze[pushRow][pushCol] = '0';
+                maze[pushRow][pushCol] = maze[newRow][newCol];
                 maze[objectRow][objectCol] = '-';
-                maze[newRow][newCol] = '-';
+                maze[newRow][newCol] = '0';
                 updateGrid();
             }
         }
+    }
+
+    private boolean isPushable(char object) {
+        return object == '2' || object == '3' || object == '4' || object == '5';
     }
 
     private void updateGrid() {
